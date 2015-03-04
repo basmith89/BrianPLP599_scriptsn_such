@@ -2,6 +2,7 @@ __author__ = 'briansmith'
 
 #This script will intake a file and report the highest GC
 #content out of the sequences provided
+###Using Dictionaries would be a much easier method
 
 data = ""
 seqID = []
@@ -12,6 +13,9 @@ f = open('rosalind_gc.txt', 'r').readlines()
 
 for line in f:
     line = line.strip()
+    #this will store the nucleotides in data to place in the nuc_list
+    if all([k == k.upper() for k in line]):
+        data += line
     for i in line:
         if i.startswith(">"):
             seqID.append(line[1:])
@@ -19,16 +23,9 @@ for line in f:
             if data:
                 nuc_list.append(data)
                 data = '' #resets data to empty string add more seqs
-            break #restarts loop after list entry has been made
+            break #restarts first loop after list entry has been made
         else:
             line = line.upper() #I don't think this is necessary
-    #stores all lines of seq in data here
-    if all([k == k.upper() for k in line]):
-        data += line
-
-#The last seq has not yet been added so append once more
-nuc_list.append(data)
-
 
 GC_list = []
 for seq in nuc_list:
