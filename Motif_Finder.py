@@ -2,6 +2,8 @@ __author__ = 'briansmith'
 
 import collections
 
+# Created By: Brian A. Smith, University of Arizona
+# Version 1.0
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 dna = "AGTCGTGGCATGGTAGTTTTATGATGATGTTGTTG"
@@ -19,9 +21,11 @@ def motif_count(dna, k, minimum_percentage):
     motifs2count = {}
     for x in range(len(dna)+1-k):
         kmer = dna[x:x+k]
+        #stores dictionary values
         motifs2count[kmer] = motifs2count.get(kmer, 0) + 1
 
     #Selecting only high-count kmers
+    #.items calls the dictionary's keys and values
     for kmer, count in motifs2count.items():
         if count < minimum_count:
             del motifs2count[kmer]
@@ -38,6 +42,6 @@ def motif_list(dna, k):
 
 my_list = motif_list(dna, 3)
 c = collections.Counter(my_list)
-
 print(c.most_common(3))
+
 print motif_count(dna, 3, 0)
