@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 
 # Created By: Brian A. Smith, University of Arizona
-# Version 1.1.2
+# Version 1.1.3
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 dna = "AGTCGTGGCATGGTAGTTTTATGATGATGTTGTTG"
@@ -40,6 +40,14 @@ def motif_count(dna, k, minimum_percentage):
              #   new_val = element + 1
               #  motif_positions[kmer].append(new_val)
 
+    final_dict = defaultdict(list)
+    for d in (motifs2count, motif_positions):
+        for key, value in d.iteritems():
+            final_dict[key].append(value)
+    print "Here is the merged dictionary:"
+    print final_dict
+
+    print motif_positions
 
 
 
@@ -64,6 +72,6 @@ my_list = motif_list(dna, 3)
 
 #Counts up motifs in list then prints top N common motifs
 c = collections.Counter(my_list)
-#print(c.most_common(3))
+print(c.most_common(3))
 
 print motif_count(dna, 3, 0)
