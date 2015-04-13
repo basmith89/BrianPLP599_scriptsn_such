@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 
 # Created By: Brian A. Smith, University of Arizona
-# Version 1.1.3
+# Version 1.1.4
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 dna = "AGTCGTGGCATGGTAGTTTTATGATGATGTTGTTG"
@@ -23,9 +23,10 @@ def motif_count(dna, k, minimum_percentage):
     motifs2count = {}
     for x in range(len(dna)+1-k):
         kmer = dna[x:x+k]
-        #kmer_match = re.match(kmer_find, dna)
         #counts up motifs and stores as a dict value
         motifs2count[kmer] = motifs2count.get(kmer, 0) + 1
+
+
 
     motif_positions = {}
     print "Motif positions:"
@@ -35,10 +36,16 @@ def motif_count(dna, k, minimum_percentage):
         kmer_find = re.compile(re.escape(kmer))
         for match in re.finditer(kmer_find, dna):
             #span gets the start and end positions for regex
-            motif_positions[kmer].append(match.span())
-            #for element in motif_positions[kmer]:
-             #   new_val = element + 1
-              #  motif_positions[kmer].append(new_val)
+            #span makes tuples therefore it must be converted to a list
+            #to add 1 to get starting position of 1 not 0
+            hit = list(match.span())
+            hit[0] += 1
+            hit[1] += 1
+            motif_positions[kmer].append(hit)
+
+            #this would return positions starting at 0
+            ###motif_positions[kmer].append(match.span())
+
 
     final_dict = defaultdict(list)
     for d in (motifs2count, motif_positions):
@@ -61,17 +68,20 @@ def motif_count(dna, k, minimum_percentage):
     return motifs2count
 
 
+
 def motif_list(dna, k):
     result = []
     for x in range(len(dna)+1-k):
             result.append(dna[x:x+k])
     return result
 
+print motif_count(dna, 3, 0)
 
 my_list = motif_list(dna, 3)
 
 #Counts up motifs in list then prints top N common motifs
 c = collections.Counter(my_list)
+print "Top Motifs:"
 print(c.most_common(3))
 
-print motif_count(dna, 3, 0)
+
