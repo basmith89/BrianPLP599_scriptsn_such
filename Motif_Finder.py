@@ -6,16 +6,26 @@ import pprint
 
 
 # Created By: Brian A. Smith, University of Arizona
-# Version 1.1.5
+# Version 1.1.6
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
-dna = "AGTCGTGGCATGGTAGTTTTATGATGATGTTGTTG"
+
+InFileName = "test.txt"
+open_file = open(InFileName, 'r').readlines()
+dna = ""
+
+#Looping through file and storing sequence data in dna
+for line in open_file:
+    if not line.startswith(">"):
+        line = line.strip('\n')
+        dna += str(line)
+        print dna
 
 
 
 #This function will slide through the sequence based off 'k'mer size
 #and will store the motifs as a key in a dictionary with which holds a new dictionary
-# contianing counts and position of those counts
+#containing counts and position of those counts
 #It also uses a min % calculation to filter out low occurances.  Use 0 to see all motifs
 
 
