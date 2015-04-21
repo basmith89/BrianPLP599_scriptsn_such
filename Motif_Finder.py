@@ -6,7 +6,7 @@ import pprint
 
 
 # Created By: Brian A. Smith, University of Arizona
-# Version 1.1.7
+# Version 1.1.8
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 
@@ -18,7 +18,7 @@ dna = ""
 #Looping through file and storing sequence data in dna
 for line in open_file:
     if not line.startswith(">"):
-        line = line.strip('\n'[560000:-350000])
+        line = line.strip('\n')[560000:-350000]
         #line splice to desired position of seq or delete for entire seq
         dna += str(line)
         print dna
