@@ -6,21 +6,22 @@ import pprint
 
 
 # Created By: Brian A. Smith, University of Arizona
-# Version 1.1.6
+# Version 1.1.7
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 
-InFileName = "test.txt"
+InFileName = "pMP_oneline.fasta"
 open_file = open(InFileName, 'r').readlines()
+write2file = open("Motif_finder_output_"+InFileName, 'w')
 dna = ""
 
 #Looping through file and storing sequence data in dna
 for line in open_file:
     if not line.startswith(">"):
-        line = line.strip('\n')
+        line = line.strip('\n'[560000:-350000])
+        #line splice to desired position of seq or delete for entire seq
         dna += str(line)
         print dna
-
 
 
 #This function will slide through the sequence based off 'k'mer size
@@ -64,8 +65,8 @@ def motif_count(dna, k, minimum_percentage):
     print "Total number of motifs found: %d" %(len(motifs2count))
     return motifs2count
 
-print motif_count(dna, 3, 0)
-pprint.pprint(motif_count(dna, 3, 0))
+#print motif_count(dna, 3, 0)
+pprint.pprint(motif_count(dna, 9, 0), write2file)
 
 ###start motif_list process
 #This function stores motifs in a list so collections can be used to sort them
@@ -75,10 +76,14 @@ def motif_list(dna, k):
             result.append(dna[x:x+k])
     return result
 
-my_list = motif_list(dna, 3)
+my_list = motif_list(dna, 9)
 #Counts up motifs in list then prints top N common motifs
 c = collections.Counter(my_list)
 print "Top Motifs:"
-print(c.most_common(3))
+print(c.most_common(10))
 ###end motif_list process
+
+
+
+
 
