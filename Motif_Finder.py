@@ -1,28 +1,43 @@
+#!/usr/bin/env python
+
 __author__ = 'briansmith'
 
 import collections
 import re
 import pprint
+import time
+from time import sleep
+import sys
+import math
+
+
+#notes: could make math better so the progress bar updates every 5% and adds a single bar
+#       eventually remove debugging print statements.
+#       Finish program off by introducing a user interface for I/O, parameter selection, and seq splicing
 
 
 # Created By: Brian A. Smith, University of Arizona
-# Version 1.1.8
+# Version 1.1.9
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 
 InFileName = "pMP_oneline.fasta"
-open_file = open(InFileName, 'r').readlines()
-write2file = open("Motif_finder_output_"+InFileName, 'w')
+open_file = open(InFileName, 'r')
+write2file = open("Motif_finder_output_" + InFileName, 'w')
 dna = ""
 
-#Looping through file and storing sequence data in dna
-for line in open_file:
+print "Start: ", time.clock()
+
+
+# Looping through file and storing sequence data in dna
+for line in open_file.readlines():
     if not line.startswith(">"):
-        line = line.strip('\n')[560000:-350000]
+        line = line.strip('\n')[1:100000]
         #line splice to desired position of seq or delete for entire seq
         dna += str(line)
         print dna
 
+print "First loop: ", time.clock()
 
 #This function will slide through the sequence based off 'k'mer size
 #and will store the motifs as a key in a dictionary with which holds a new dictionary
@@ -30,15 +45,36 @@ for line in open_file:
 #It also uses a min % calculation to filter out low occurances.  Use 0 to see all motifs
 
 
+
 def motif_count(dna, k, minimum_percentage):
     total_kmers = len(dna) - k + 1
     minimum_count = (total_kmers * minimum_percentage) / 100
-    print "Min count is: %s"  %(str(minimum_count))
+    print "Min count is: %s" % (str(minimum_count))
     #create a dictionary of motifs
     motifs2count = {}
-    for x in range(len(dna)+1-k):
+    print "Collecting motifs: "
+    #the following variables are for building the progress bar
+    seq_list = range(len(dna) + 1 - k)
+    total_nuc = seq_list[-1]
+    pbar_total = round(total_nuc, -1)
+    print "Creating motif library, please wait.\n" \
+          "If it's a large sequence brew some coffee and come back later :)"
+
+    for x in seq_list:
+        bar_percent = int((x/pbar_total)*10)
+        bar = int(((x/pbar_total)*10)*2)
+        #print x/pbar_total
+        #convert value ^ into a var, add if statement with modulous, lookup floor function
+        #have to do math on total val so it will print multiple times
+        if ((x/pbar_total)*100) % 10 == 0:
+            sys.stdout.write('\r')
+            #Can't get it to print to 100% in increments of 5 with each = being 5%
+            sys.stdout.write("[%-20s] %d%%" % ('='*bar, 10*bar_percent))
+            sys.stdout.flush()
+
+        #print progress bar
         #this is the sliding window of length k
-        kmer = dna[x:x+k]
+        kmer = dna[x:x + k]
         #open an empty list for position lists .span
         position = []
         #create varible for regex to find kmer
@@ -52,17 +88,15 @@ def motif_count(dna, k, minimum_percentage):
             hit[1] += 1
             position.append(hit)
 
+
         motifs2count[kmer] = {"Count": dna.count(kmer), "Position": position}
-
-
-
 
     #Selecting only high-count kmers
     #.items calls the dictionary's keys and values
     for kmer, count in motifs2count.items():
         if count < minimum_count:
             del motifs2count[kmer]
-    print "Total number of motifs found: %d" %(len(motifs2count))
+    print "\nDone!\nTotal number of motifs found: %d" % (len(motifs2count))
     return motifs2count
 
 #print motif_count(dna, 3, 0)
@@ -72,9 +106,10 @@ pprint.pprint(motif_count(dna, 9, 0), write2file)
 #This function stores motifs in a list so collections can be used to sort them
 def motif_list(dna, k):
     result = []
-    for x in range(len(dna)+1-k):
-            result.append(dna[x:x+k])
+    for x in range(len(dna) + 1 - k):
+        result.append(dna[x:x + k])
     return result
+
 
 my_list = motif_list(dna, 9)
 #Counts up motifs in list then prints top N common motifs
@@ -85,5 +120,5 @@ print(c.most_common(10))
 
 
 
-
+print "Done: ", time.clock()
 
