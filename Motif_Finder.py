@@ -15,7 +15,7 @@ import argparse, textwrap
 
 
 # origin of replication motifs are about 8-9 nucleotides in size
-# in E. coli there are 4 DNaA boxes with this conserved motif
+# in E. coli there are 4 DnaA boxes with this conserved motif
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
     description = textwrap.dedent('''\
@@ -49,8 +49,6 @@ print "Start: ", time.clock()
 
 if args.start_slice:
     start_slice = args.start_slice - 1
-    print start_slice
-    print args.end_slice
 
 # Looping through file and storing sequence data in dna
 for line in open_file.readlines():
