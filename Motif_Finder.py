@@ -14,9 +14,6 @@ import argparse, textwrap
 #       eventually remove debugging print statements.
 #       Finish program off by introducing a user interface for I/O, parameter selection, and seq splicing
 
-
-# Created By: Brian A. Smith, University of Arizona
-# Version 1.1.9
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 
