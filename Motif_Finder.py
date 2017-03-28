@@ -6,9 +6,8 @@ import collections
 import re
 import pprint
 import time
-from time import sleep
 import sys
-import math
+import argparse, textwrap
 
 
 #notes: could make math better so the progress bar updates every 5% and adds a single bar
@@ -21,18 +20,53 @@ import math
 # origin of replication motifs are about 8-9 nucleotides in size
 # in E. coli there are 4 DNaA boxes with this conserved motif
 
-InFileName = "pMP_oneline.fasta"
-open_file = open(InFileName, 'r')
-write2file = open("Motif_finder_output_" + InFileName, 'w')
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+    description = textwrap.dedent('''\
+                                 Author: Brian A. Smith
+                                 University of Arizona
+                                 basmith@email.arizona.edu
+                 Motif Finder
+                 Version 1.2
+                 This motif finder will use a brute force method to count common motifs
+                 and report the top 10 to STDOUT.  A full report will also be written to
+                 desired output file.'''))
+
+parser.add_argument("-i", "--input", required = True,
+           help = "FASTA file required")
+parser.add_argument("-o", "--output", required = True,
+                    help = "Desired output file name")
+parser.add_argument("-s", "--start_slice", required = False,
+                    type = int, help = "Select a starting position to cut [START:end:step]")
+parser.add_argument("-e", "--end_slice", required = False,
+                    type = int, help = "Select an ending position to cut [start:END:step]")
+parser.add_argument("-m", "--motif_size", required = True,
+                    type = int, help = "Choose a desired motif size")
+
+args = parser.parse_args()
+
+open_file = open(args.input, 'r')
+write2file = open(args.output, 'w')
 dna = ""
 
 print "Start: ", time.clock()
 
+if args.start_slice:
+    start_slice = args.start_slice - 1
+    print start_slice
+    print args.end_slice
 
 # Looping through file and storing sequence data in dna
 for line in open_file.readlines():
     if not line.startswith(">"):
-        line = line.strip('\n')[1:100000]
+        if args.start_slice and args.end_slice:
+            line = line.strip('\n')[start_slice:args.end_slice]
+        elif args.start_slice:
+            line = line.strip('\n')[start_slice:]
+        elif args.end_slice:
+            line = line.strip('\n')[:args.end_slice]
+        else:
+            line = line.strip('\n')
+        #line = line.strip('\n')[1:100000]
         #line splice to desired position of seq or delete for entire seq
         dna += str(line)
         print dna
@@ -58,7 +92,7 @@ def motif_count(dna, k, minimum_percentage):
     total_nuc = seq_list[-1]
     pbar_total = round(total_nuc, -1)
     print "Creating motif library, please wait.\n" \
-          "If it's a large sequence brew some coffee and come back later :)"
+          "If it's a large sequence, brew some coffee and come back later :)"
 
     for x in seq_list:
         bar_percent = int((x/pbar_total)*10)
@@ -100,7 +134,7 @@ def motif_count(dna, k, minimum_percentage):
     return motifs2count
 
 #print motif_count(dna, 3, 0)
-pprint.pprint(motif_count(dna, 9, 0), write2file)
+pprint.pprint(motif_count(dna, args.motif_size, 0), write2file)
 
 ###start motif_list process
 #This function stores motifs in a list so collections can be used to sort them
@@ -111,7 +145,7 @@ def motif_list(dna, k):
     return result
 
 
-my_list = motif_list(dna, 9)
+my_list = motif_list(dna, args.motif_size)
 #Counts up motifs in list then prints top N common motifs
 c = collections.Counter(my_list)
 print "Top Motifs:"
